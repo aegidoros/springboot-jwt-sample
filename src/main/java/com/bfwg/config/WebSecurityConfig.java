@@ -35,10 +35,6 @@ import java.util.List;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Autowired
     private CustomUserDetailsService jwtUserDetailsService;
@@ -54,8 +50,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
-        auth.userDetailsService( jwtUserDetailsService )
-            .passwordEncoder( passwordEncoder() );
+        auth.userDetailsService( jwtUserDetailsService );
     }
 
     @Autowired

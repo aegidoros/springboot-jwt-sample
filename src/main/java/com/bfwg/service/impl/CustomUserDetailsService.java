@@ -28,9 +28,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Override
@@ -62,7 +59,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         User user = (User) loadUserByUsername(username);
 
-        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPassword(newPassword);
         userRepository.save(user);
 
     }
