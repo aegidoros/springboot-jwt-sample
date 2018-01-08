@@ -57,7 +57,7 @@ mvn spring-boot:run
 springboot-jwt-starter/
  ├──src/                                                        * our source files
  │   ├──main
- │   │   ├──java.com.bfwg
+ │   │   ├──java.com.aer
  │   │   │   ├──config
  │   │   │   │   └──WebSecurityConfig.java                      * config file for filter, custom userSerivce etc.
  │   │   │   ├──model
