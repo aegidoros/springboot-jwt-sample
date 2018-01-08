@@ -67,8 +67,8 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // token creation
-        User user = (User)authentication.getPrincipal();
-        String jws = tokenHelper.generateToken( user.getUsername(), device);
+        User userDetail = (User)authentication.getPrincipal();
+        String jws = tokenHelper.generateToken( userDetail, device);
         int expiresIn = tokenHelper.getExpiredIn(device);
         // Return the token
         return ResponseEntity.ok(new UserTokenState(jws, expiresIn));

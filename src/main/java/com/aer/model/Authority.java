@@ -1,6 +1,7 @@
 package com.aer.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -18,6 +19,7 @@ public class Authority implements GrantedAuthority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @JsonProperty("authority")
     @Column(name="name")
     String name;
 

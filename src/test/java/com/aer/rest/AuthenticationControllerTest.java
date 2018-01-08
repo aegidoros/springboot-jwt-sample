@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mobile.device.Device;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -48,8 +49,8 @@ public class AuthenticationControllerTest {
 
     @MockBean
     private TimeProvider timeProviderMock;
-
-    private static final String TEST_USERNAME = "testUser";
+    @MockBean
+    private User userDetails;
 
     @Autowired
     private TokenHelper tokenHelper;
@@ -162,6 +163,6 @@ public class AuthenticationControllerTest {
     }
 
     private String createToken(Device device) {
-        return tokenHelper.generateToken(TEST_USERNAME, device);
+        return tokenHelper.generateToken(userDetails, device);
     }
 }

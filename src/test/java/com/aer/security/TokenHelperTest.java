@@ -31,6 +31,9 @@ public class TokenHelperTest {
     private TokenHelper tokenHelper;
 
     @Mock
+    private User userDetails;
+
+    @Mock
     private TimeProvider timeProviderMock;
 
     @InjectMocks
@@ -155,7 +158,7 @@ public class TokenHelperTest {
     }
 
     private String createToken(Device device) {
-        return tokenHelper.generateToken(TEST_USERNAME, device);
+        return tokenHelper.generateToken(userDetails, device);
     }
 
 }
