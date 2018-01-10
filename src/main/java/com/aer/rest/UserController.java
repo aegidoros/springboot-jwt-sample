@@ -26,12 +26,14 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping( method = GET, value = "/user/{userId}" )
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasAuthority('user_view')")
+    @PreAuthorize("hasRole('USER')")
     public User loadById( @PathVariable Long userId ) {
         return this.userService.findById( userId );
     }
 
     @RequestMapping( method = GET, value= "/user/all")
+    //@PreAuthorize("hasAuthority('user_view')")
     @PreAuthorize("hasRole('ADMIN')")
     public List<User> loadAll() {
         return this.userService.findAll();
@@ -40,10 +42,11 @@ public class UserController {
 
     /*
      *  We are not using userService.findByUsername here(we could),
-     *  so it is good that we are making sure that the user has role "ROLE_USER"
+     *  so it is good that we are making sure that the user has Role "ROLE_USER"
      *  to access this endpoint.
      */
     @RequestMapping("/whoami")
+    //@PreAuthorize("hasAuthority('user_view')")
     @PreAuthorize("hasRole('USER')")
     public User user(Principal user) {
         return this.userService.findByUsername(user.getName());
