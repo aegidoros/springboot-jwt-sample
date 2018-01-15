@@ -1,62 +1,46 @@
 package com.aer.model;
 
+import com.aer.entities.Privilege;
+import com.aer.entities.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.joda.time.DateTime;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetails;
 
-import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+public class User implements LdapUserDetails {
 
-/**
- * Created by fan.jin on 2016-10-15.
- */
-
-@Entity
-@Table(name = "user")
-public class User implements UserDetails {
-
-    private static final long serialVersionUID = 2668653261891276609L;
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username")
+    private String dn;
+
     private String username;
 
     @JsonIgnore
-    @Column(name = "password")
     private String password;
 
-    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "email")
     private String email;
 
-    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "enabled")
     private boolean enabled;
 
-    @Column(name = "last_password_reset_date")
     private Timestamp lastPasswordResetDate;
 
-    @ManyToMany
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
+
+    private static final long serialVersionUID = 2668653261891276609L;
+
+    @JsonInclude()
+    private List<? extends GrantedAuthority> authorities;
 
     public Long getId() {
         return id;
@@ -66,12 +50,62 @@ public class User implements UserDetails {
         this.id = id;
     }
 
+    public void setDn(String dn) {
+        this.dn = dn;
+    }
+
     public String getUsername() {
         return username;
     }
 
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public String getDn() {
+        return dn;
+    }
+
+    @Override
+    public void eraseCredentials() {
+
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<Privilege> authorities = new ArrayList<>();
+        for (Role role : this.getRoles()) {
+            authorities.addAll(role.getAuthorities());
+        }
+        return this.authorities = authorities;
+    }
+
+    public void setAuthorities(List<? extends GrantedAuthority> authorities) {
+        this.authorities = authorities;
     }
 
     public String getPassword() {
@@ -79,8 +113,6 @@ public class User implements UserDetails {
     }
 
     public void setPassword(String password) {
-        Timestamp now = new Timestamp(DateTime.now().getMillis());
-        this.setLastPasswordResetDate(now);
         this.password = password;
     }
 
@@ -98,23 +130,6 @@ public class User implements UserDetails {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-
-    @Override
-    public List<Privilege> getAuthorities() {
-        List<Privilege> authorities = new ArrayList<>();
-        for (Role role : this.getRoles()) {
-            authorities.addAll(role.getAuthorities());
-        }
-        return authorities;
     }
 
     public String getEmail() {
@@ -145,27 +160,13 @@ public class User implements UserDetails {
         this.lastPasswordResetDate = lastPasswordResetDate;
     }
 
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
+    public List<Role> getRoles() {
+        return roles;
     }
 
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
-    @JsonIgnore
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
 
 }

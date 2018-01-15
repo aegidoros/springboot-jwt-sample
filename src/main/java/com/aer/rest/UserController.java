@@ -1,5 +1,6 @@
 package com.aer.rest;
 
+import com.aer.entities.UserEntity;
 import com.aer.model.User;
 import com.aer.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,22 +20,22 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  */
 
 @RestController
-@RequestMapping( value = "/api", produces = MediaType.APPLICATION_JSON_VALUE )
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @RequestMapping( method = GET, value = "/user/{userId}" )
-    //@PreAuthorize("hasAuthority('user_view')")
-    @PreAuthorize("hasRole('USER')")
-    public User loadById( @PathVariable Long userId ) {
-        return this.userService.findById( userId );
+    @RequestMapping(method = GET, value = "/user/{userId}")
+    @PreAuthorize("hasAuthority('user_view')")
+    //@PreAuthorize("hasRole('USER')")
+    public User loadById(@PathVariable Long userId) {
+        return this.userService.findById(userId);
     }
 
-    @RequestMapping( method = GET, value= "/user/all")
-    //@PreAuthorize("hasAuthority('user_view')")
-    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(method = GET, value = "/user/all")
+    @PreAuthorize("hasAuthority('user_view')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public List<User> loadAll() {
         return this.userService.findAll();
     }
@@ -46,8 +47,8 @@ public class UserController {
      *  to access this endpoint.
      */
     @RequestMapping("/whoami")
-    //@PreAuthorize("hasAuthority('user_view')")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAuthority('user_view')")
+    //@PreAuthorize("hasRole('USER')")
     public User user(Principal user) {
         return this.userService.findByUsername(user.getName());
     }

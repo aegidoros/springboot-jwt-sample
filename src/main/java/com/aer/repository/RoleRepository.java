@@ -1,6 +1,6 @@
 package com.aer.repository;
 
-import com.aer.model.Role;
+import com.aer.entities.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

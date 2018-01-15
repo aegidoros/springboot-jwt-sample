@@ -1,8 +1,10 @@
 package com.aer.rest;
 
 import com.aer.common.DeviceProvider;
+import com.aer.entities.UserTokenState;
+import com.aer.mapping.LdapUserDetailMapper;
+import com.aer.mapping.UserMapper;
 import com.aer.model.User;
-import com.aer.model.UserTokenState;
 import com.aer.security.TokenHelper;
 import com.aer.security.auth.JwtAuthenticationRequest;
 import com.aer.service.impl.CustomUserDetailsService;
@@ -10,12 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.ldap.userdetails.LdapUserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,8 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by fan.jin on 2017-05-10.
@@ -48,6 +49,8 @@ public class AuthenticationController {
     @Autowired
     private DeviceProvider deviceProvider;
 
+    private LdapUserDetailMapper ldapUserDetailMapper = LdapUserDetailMapper.INSTANCE;
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest,
@@ -67,8 +70,10 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // token creation
-        User userDetail = (User)authentication.getPrincipal();
-        String jws = tokenHelper.generateToken( userDetail, device);
+        //LdapUserDetails userDetail = (LdapUserDetails)authentication.getPrincipal();
+
+        User user=ldapUserDetailMapper.toDto((LdapUserDetailsImpl) authentication.getPrincipal());
+        String jws = tokenHelper.generateToken( user, device);
         int expiresIn = tokenHelper.getExpiredIn(device);
         // Return the token
         return ResponseEntity.ok(new UserTokenState(jws, expiresIn));

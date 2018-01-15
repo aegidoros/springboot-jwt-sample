@@ -1,7 +1,7 @@
  USE `security`;
 
- INSERT INTO user (username, password, first_name, last_name, email, phone_number, enabled) VALUES ('alberto.egido', 'test', 'Alberto', 'Egido', 'alberto.egido@tui.com', '+1234567890', true);
- INSERT INTO user (username, password, first_name, last_name, email, phone_number, enabled) VALUES ('satoshi.nakamoto', 'test', 'Satoshi', 'Nakamoto', 'satoshi.nakamoto@tui.com', '+0987654321', true);
+ INSERT INTO userEntity (username, password, first_name, last_name, email, phone_number, enabled) VALUES ('alberto.egido', 'test', 'Alberto', 'Egido', 'alberto.egido@tui.com', '+1234567890', true);
+ INSERT INTO userEntity (username, password, first_name, last_name, email, phone_number, enabled) VALUES ('satoshi.nakamoto', 'test', 'Satoshi', 'Nakamoto', 'satoshi.nakamoto@tui.com', '+0987654321', true);
 
  INSERT INTO role ( name) VALUES ('ROLE_USER');
  INSERT INTO role ( name) VALUES ('ROLE_ADMIN');

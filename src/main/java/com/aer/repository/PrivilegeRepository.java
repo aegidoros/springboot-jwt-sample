@@ -1,6 +1,6 @@
 package com.aer.repository;
 
-import com.aer.model.Privilege;
+import com.aer.entities.Privilege;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

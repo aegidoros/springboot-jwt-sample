@@ -1,4 +1,4 @@
-package com.aer.model;
+package com.aer.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

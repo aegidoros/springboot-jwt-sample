@@ -2,8 +2,8 @@
 //
 //import com.aer.common.DeviceProvider;
 //import com.aer.common.TimeProvider;
-//import com.aer.model.Role;
-//import com.aer.model.User;
+//import com.aer.entities.Role;
+//import com.aer.entities.UserEntity;
 //import com.aer.security.DeviceDummy;
 //import com.aer.security.TokenHelper;
 //import com.aer.service.impl.CustomUserDetailsService;
@@ -49,7 +49,7 @@
 //    @MockBean
 //    private TimeProvider timeProviderMock;
 //    @MockBean
-//    private User userDetails;
+//    private UserEntity userDetails;
 //
 //    @Autowired
 //    private TokenHelper tokenHelper;
@@ -77,7 +77,7 @@
 //                .apply(springSecurity())
 //                .build();
 //
-//        User user = new User();
+//        UserEntity user = new UserEntity();
 //        user.setUsername("username");
 //        Role authority = new Role();
 //        authority.setId(0L);

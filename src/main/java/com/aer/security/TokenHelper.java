@@ -1,6 +1,7 @@
 package com.aer.security;
 
 import com.aer.common.TimeProvider;
+import com.aer.entities.UserEntity;
 import com.aer.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,14 +11,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mobile.device.Device;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -63,12 +62,12 @@ public class TokenHelper {
         return username;
     }
 
-    public UserDetails getUserDetailFromToken(String token) {
+    public User getUserDetailFromToken(String token) {
         final Claims claims = this.getAllClaimsFromToken(token);
         ObjectMapper objectMapper = new ObjectMapper();
         User user = null;
         try {
-          user=  objectMapper.readValue((String) claims.get("userDetail"), User.class);
+          user =  objectMapper.readValue((String) claims.get("userDetail"), User.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -115,19 +114,19 @@ public class TokenHelper {
         return refreshedToken;
     }
 
-    public String generateToken(User userDetail, Device device) {
+    public String generateToken(User user, Device device) {
         String audience = generateAudience(device);
 //        Map claims = new HashMap<>();
 //        claims.put(userDetail.getUsername(), userDetail);
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            String userDetailAsString = objectMapper.writeValueAsString(userDetail);
+            String userDetailAsString = objectMapper.writeValueAsString(user);
 
             return Jwts.builder()
                     .claim("userDetail", userDetailAsString)
                     .setIssuer(APP_NAME)
-                    .setSubject(userDetail.getUsername())
+                    .setSubject(user.getUsername())
                     .setAudience(audience)
                     .setIssuedAt(timeProvider.now())
                     .setExpiration(generateExpirationDate(device))
@@ -174,14 +173,14 @@ public class TokenHelper {
         return device.isMobile() || device.isTablet() ? MOBILE_EXPIRES_IN : EXPIRES_IN;
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        User user = (User) userDetails;
+    public Boolean validateToken(String token, LdapUserDetails userDetails) {
+        UserEntity userEntity = (UserEntity) userDetails;
         final String username = getUsernameFromToken(token);
         final Date created = getIssuedAtDateFromToken(token);
         return (
                 username != null &&
-                        username.equals(userDetails.getUsername()) &&
-                        !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())
+                        username.equals(userEntity.getUsername()) &&
+                        !isCreatedBeforeLastPasswordReset(created, userEntity.getLastPasswordResetDate())
         );
     }
 

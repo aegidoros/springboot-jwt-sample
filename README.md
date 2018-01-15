@@ -46,8 +46,8 @@ mvn install
 mvn spring-boot:run
 
 # the app will be running on port 8080
-# there are two built-in user accounts to demonstrate the differing levels of access to the endpoints:
-# - User - user:123
+# there are two built-in userEntity accounts to demonstrate the differing levels of access to the endpoints:
+# - User - userEntity:123
 # - Admin - admin:123
 ```
 

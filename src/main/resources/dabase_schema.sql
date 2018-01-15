@@ -6,9 +6,9 @@ USE `security`;
 --
 -- Table structure for table `book_detail`
 --
-DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `userEntity`;
 
-CREATE TABLE IF NOT EXISTS `user` (
+CREATE TABLE IF NOT EXISTS `userEntity` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
   `password` varchar(255),
@@ -39,7 +39,7 @@ INDEX `fk_userId_user_role_idx` (`user_id` ASC),
 INDEX `fk_roleId_user_role_idx` (`role_id` ASC),
 CONSTRAINT `fk_userId_user_role`
 	FOREIGN KEY (`user_id`)
-    REFERENCES `user` (`id`)
+    REFERENCES `userEntity` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
 CONSTRAINT `fk_roleId_user_role`

@@ -1,4 +1,4 @@
-package com.aer.model;
+package com.aer.entities;
 
 
 import javax.persistence.*;

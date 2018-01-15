@@ -1,10 +1,12 @@
 package com.aer.config;
 
 import com.aer.security.TokenHelper;
+import com.aer.security.auth.MyAuthoritiesPopulator;
 import com.aer.security.auth.RestAuthenticationEntryPoint;
 import com.aer.security.auth.TokenAuthenticationFilter;
 import com.aer.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,8 +18,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -32,9 +32,22 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, proxyTargetClass = true)
+
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Value("${ldap.domain}")
+    private String DOMAIN;
+
+    @Value("${ldap.url}")
+    private String URL;
+
+    @Value("${ldap.rootDN}")
+    private String rootDN;
+
+
+    @Autowired
+    MyAuthoritiesPopulator myAuthoritiesPopulator;
 
     @Autowired
     private CustomUserDetailsService jwtUserDetailsService;
@@ -42,28 +55,67 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
+    @Autowired
+    TokenHelper tokenHelper;
+
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder authManagerBuilder) throws Exception {
+//        authManagerBuilder.authenticationProvider(activeDirectoryLdapAuthenticationProvider()).userDetailsService(jwtUserDetailsService);
+//    }
+//
+//    @Bean
+//    @Override
+//    public AuthenticationManager authenticationManager() {
+//        return new ProviderManager(Arrays.asList(activeDirectoryLdapAuthenticationProvider()));
+//    }
+//
+//    @Bean
+//    public AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
+//        ActiveDirectoryLdapAuthenticationProvider provider = new ActiveDirectoryLdapAuthenticationProvider(DOMAIN, URL, rootDN);
+//        provider.setConvertSubErrorCodesToExceptions(true);
+//        provider.setUseAuthenticationRequestCredentials(true);
+//        return provider;
+//    }
+//
+//
+//
+//    @Autowired
+//    public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
+//        auth.userDetailsService( jwtUserDetailsService );
+//    }
+
+
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
-    @Autowired
-    public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
-        auth.userDetailsService( jwtUserDetailsService );
-    }
 
     @Autowired
-    TokenHelper tokenHelper;
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.ldapAuthentication()
+                .contextSource()
+                .root("DC=tuiad,DC=net")
+                .url("ldap://esmad1sv0003.tuiad.net")
+                .port(636)
+                .managerDn("CN=OLP AD User,OU=ServiceAccounts,OU=Destination Services,DC=tuiad,DC=net")
+                .managerPassword("Hola1234")
+                .and()
+                .userSearchBase("DC=tuiad,DC=net")
+                .userSearchFilter("(CN={0})")
+                .ldapAuthoritiesPopulator(myAuthoritiesPopulator);
+    }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         List<RequestMatcher> csrfMethods = new ArrayList<>();
-        Arrays.asList( "POST", "PUT", "PATCH", "DELETE" )
-                .forEach( method -> csrfMethods.add( new AntPathRequestMatcher( "/**", method ) ) );
+        Arrays.asList("POST", "PUT", "PATCH", "DELETE")
+                .forEach(method -> csrfMethods.add(new AntPathRequestMatcher("/**", method)));
         http
-                .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
-                .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
                 .authorizeRequests()
                 .antMatchers(
                         HttpMethod.GET,
@@ -99,7 +151,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/**/*.html",
                 "/**/*.css",
                 "/**/*.js"
-            );
+        );
 
     }
+
 }

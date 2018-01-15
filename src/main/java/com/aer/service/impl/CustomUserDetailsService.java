@@ -1,24 +1,14 @@
 package com.aer.service.impl;
 
-import com.aer.model.Privilege;
-import com.aer.model.Role;
 import com.aer.model.User;
-import com.aer.repository.RoleRepository;
-import com.aer.repository.UserRepository;
+import com.aer.service.UserService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by fan.jin on 2016-10-31.
@@ -28,68 +18,67 @@ import java.util.List;
 public class CustomUserDetailsService implements UserDetailsService {
 
     protected final Log LOGGER = LogFactory.getLog(getClass());
-    @Autowired
-    private RoleRepository roleRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+//    @Autowired
+//    private AuthenticationManager authenticationManager;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-//        User user = userRepository.findByUsername(username);
-//        if (user != null) {
-//            return new org.springframework.security.core.userdetails.User(
-//                    user.getEmail(), user.getPassword(), user.isEnabled(), true, true,
-//                    true, getAuthorities(user.getRoles()));
+//        UserEntity userEntity = userRepository.findByUsername(username);
+//        if (userEntity != null) {
+//            return new org.springframework.security.core.userdetails.UserEntity(
+//                    userEntity.getEmail(), userEntity.getPassword(), userEntity.isEnabled(), true, true,
+//                    true, getAuthorities(userEntity.getRoles()));
 //
 //
-////            return new org.springframework.security.core.userdetails.User(
+////            return new org.springframework.security.core.userdetails.UserEntity(
 ////                    " ", " ", true, true, true, true,
 ////                    getAuthorities(Arrays.asList(
 ////                            roleRepository.findByName("ROLE_USER"))));
 //        } else {
-//            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+//            throw new UsernameNotFoundException(String.format("No userEntity found with username '%s'.", username));
 //        }
 
 
-        User user = userRepository.findByUsername(username);
+        User user = userService.findByUsername(username);
         if (user == null) {
-            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+            throw new UsernameNotFoundException(String.format("No userEntity found with username '%s'.", username));
         } else {
             return user;
         }
     }
 
-
-    private Collection<? extends GrantedAuthority> getAuthorities(
-            Collection<Role> roles) {
-        return getGrantedAuthorities((List<String>) getPrivileges(roles));
-    }
-
-    private Collection<String> getPrivileges(Collection<Role> roles) {
-
-        final Collection<String> privilegesNames = null;
-        final Collection<Privilege> privileges = null;
-        for (final Role role : roles) {
-            privileges.add((Privilege) role.getAuthorities());
-        }
-        for (final Privilege item : privileges) {
-            privilegesNames.add(item.getName());
-        }
-        return privilegesNames;
-    }
-
-    private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        for (String privilege : privileges) {
-            authorities.add(new SimpleGrantedAuthority(privilege));
-        }
-        return authorities;
-    }
+//
+//    private Collection<? extends GrantedAuthority> getAuthorities(
+//            Collection<Role> roles) {
+//        return getGrantedAuthorities((List<String>) getPrivileges(roles));
+//    }
+//
+//    private Collection<String> getPrivileges(Collection<Role> roles) {
+//
+//        final Collection<String> privilegesNames = null;
+//        final Collection<Privilege> privileges = null;
+//        for (final Role role : roles) {
+//            privilegesNames.add(role.getName());
+//            privileges.add((Privilege) role.getAuthorities());
+//        }
+//        for (final Privilege item : privileges) {
+//            privilegesNames.add(item.getName());
+//        }
+//        return privilegesNames;
+//    }
+//
+//    private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
+//        List<GrantedAuthority> authorities = new ArrayList<>();
+//        for (String privilege : privileges) {
+//            authorities.add(new SimpleGrantedAuthority(privilege));
+//        }
+//        return authorities;
+//    }
 
 
 //    public void changePassword(String oldPassword, String newPassword) {
@@ -109,7 +98,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 //
 //        LOGGER.debug("Changing password for user '"+ username + "'");
 //
-//        User user = (User) loadUserByUsername(username);
+//        UserEntity user = (UserEntity) loadUserByUsername(username);
 //
 //        user.setPassword(newPassword);
 //        userRepository.save(user);
