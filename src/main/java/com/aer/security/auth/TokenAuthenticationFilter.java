@@ -1,8 +1,10 @@
 package com.aer.security.auth;
 
+import com.aer.model.User;
 import com.aer.security.TokenHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,13 +25,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
-    private TokenHelper tokenHelper;
+    private final TokenHelper tokenHelper;
 
-    private UserDetailsService userDetailsService;
-
-    public TokenAuthenticationFilter(TokenHelper tokenHelper, UserDetailsService userDetailsService) {
+    @Autowired
+    public TokenAuthenticationFilter(TokenHelper tokenHelper) {
         this.tokenHelper = tokenHelper;
-        this.userDetailsService = userDetailsService;
     }
 
 
@@ -40,12 +40,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             FilterChain chain
     ) throws IOException, ServletException {
 
-       // String username;
+        // String username;
         String authToken = tokenHelper.getToken(request);
 
         if (authToken != null) {
             // get username from token
-            LdapUserDetails userDetails = tokenHelper.getUserDetailFromToken(authToken);
+            UserDetails userDetails = tokenHelper.getUserDetailFromToken(authToken);
             //  username = tokenHelper.getUsernameFromToken(authToken);
             //  if (username != null) {
             // get user

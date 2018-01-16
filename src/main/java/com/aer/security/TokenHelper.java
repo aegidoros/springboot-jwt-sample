@@ -1,7 +1,6 @@
 package com.aer.security;
 
 import com.aer.common.TimeProvider;
-import com.aer.entities.UserEntity;
 import com.aer.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +10,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mobile.device.Device;
-import org.springframework.security.ldap.userdetails.LdapUserDetails;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,12 +61,12 @@ public class TokenHelper {
         return username;
     }
 
-    public User getUserDetailFromToken(String token) {
+    public UserDetails getUserDetailFromToken(String token) {
         final Claims claims = this.getAllClaimsFromToken(token);
         ObjectMapper objectMapper = new ObjectMapper();
         User user = null;
         try {
-          user =  objectMapper.readValue((String) claims.get("userDetail"), User.class);
+            user = objectMapper.readValue((String) claims.get("user"), User.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -116,15 +115,12 @@ public class TokenHelper {
 
     public String generateToken(User user, Device device) {
         String audience = generateAudience(device);
-//        Map claims = new HashMap<>();
-//        claims.put(userDetail.getUsername(), userDetail);
-
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             String userDetailAsString = objectMapper.writeValueAsString(user);
 
             return Jwts.builder()
-                    .claim("userDetail", userDetailAsString)
+                    .claim("user", userDetailAsString)
                     .setIssuer(APP_NAME)
                     .setSubject(user.getUsername())
                     .setAudience(audience)
@@ -173,15 +169,13 @@ public class TokenHelper {
         return device.isMobile() || device.isTablet() ? MOBILE_EXPIRES_IN : EXPIRES_IN;
     }
 
-    public Boolean validateToken(String token, LdapUserDetails userDetails) {
-        UserEntity userEntity = (UserEntity) userDetails;
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        User userEntity = (User) userDetails;
         final String username = getUsernameFromToken(token);
         final Date created = getIssuedAtDateFromToken(token);
         return (
                 username != null &&
-                        username.equals(userEntity.getUsername()) &&
-                        !isCreatedBeforeLastPasswordReset(created, userEntity.getLastPasswordResetDate())
-        );
+                        username.equals(userEntity.getUsername()));
     }
 
     private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {

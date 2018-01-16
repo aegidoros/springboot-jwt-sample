@@ -58,32 +58,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     TokenHelper tokenHelper;
 
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder authManagerBuilder) throws Exception {
-//        authManagerBuilder.authenticationProvider(activeDirectoryLdapAuthenticationProvider()).userDetailsService(jwtUserDetailsService);
-//    }
-//
-//    @Bean
-//    @Override
-//    public AuthenticationManager authenticationManager() {
-//        return new ProviderManager(Arrays.asList(activeDirectoryLdapAuthenticationProvider()));
-//    }
-//
-//    @Bean
-//    public AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
-//        ActiveDirectoryLdapAuthenticationProvider provider = new ActiveDirectoryLdapAuthenticationProvider(DOMAIN, URL, rootDN);
-//        provider.setConvertSubErrorCodesToExceptions(true);
-//        provider.setUseAuthenticationRequestCredentials(true);
-//        return provider;
-//    }
-//
-//
-//
-//    @Autowired
-//    public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
-//        auth.userDetailsService( jwtUserDetailsService );
-//    }
-
 
     @Bean
     @Override
@@ -129,7 +103,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 ).permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated().and()
-                .addFilterBefore(new TokenAuthenticationFilter(tokenHelper, jwtUserDetailsService), BasicAuthenticationFilter.class);
+                .addFilterBefore(new TokenAuthenticationFilter(tokenHelper), BasicAuthenticationFilter.class);
 
         http.csrf().disable();
     }

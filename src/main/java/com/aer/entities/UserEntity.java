@@ -23,9 +23,6 @@ public class UserEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Transient
-    private String dn;
-
     @Column(name = "username")
     private String username;
 
@@ -107,8 +104,6 @@ public class UserEntity implements Serializable {
         this.roles = roles;
     }
 
-
-
     public String getEmail() {
         return email;
     }
@@ -123,6 +118,10 @@ public class UserEntity implements Serializable {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public void setEnabled(boolean enabled) {

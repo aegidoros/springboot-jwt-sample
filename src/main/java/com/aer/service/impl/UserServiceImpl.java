@@ -38,4 +38,5 @@ public class UserServiceImpl implements UserService {
         return userEntities.stream().map(UserEntity -> userMapper.toDto(UserEntity))
                 .collect(Collectors.toList());
     }
+
 }

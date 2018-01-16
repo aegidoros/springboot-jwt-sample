@@ -1,6 +1,5 @@
 package com.aer.rest;
 
-import com.aer.entities.UserEntity;
 import com.aer.model.User;
 import com.aer.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class UserController {
     }
 
     @RequestMapping(method = GET, value = "/user/all")
-    @PreAuthorize("hasAuthority('user_view')")
+    @PreAuthorize("hasAuthority('user_create')")
     //@PreAuthorize("hasRole('ADMIN')")
     public List<User> loadAll() {
         return this.userService.findAll();

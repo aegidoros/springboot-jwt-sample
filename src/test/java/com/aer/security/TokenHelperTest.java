@@ -10,7 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mobile.device.Device;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.ldap.userdetails.LdapUserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.Timestamp;
@@ -64,7 +66,7 @@ public class TokenHelperTest {
     public void mobileTokenShouldLiveLonger() {
         Date beforeSomeTime = new Date(DateUtil.now().getTime() - 15 * 1000);
 
-        LdapUserDetails userDetails = mock(User.class);
+        UserDetails userDetails = mock(User.class);
         when(userDetails.getUsername()).thenReturn(TEST_USERNAME);
 
         when(timeProviderMock.now())

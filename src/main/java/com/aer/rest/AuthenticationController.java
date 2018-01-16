@@ -1,9 +1,8 @@
 package com.aer.rest;
 
 import com.aer.common.DeviceProvider;
+import com.aer.entities.Privilege;
 import com.aer.entities.UserTokenState;
-import com.aer.mapping.LdapUserDetailMapper;
-import com.aer.mapping.UserMapper;
 import com.aer.model.User;
 import com.aer.security.TokenHelper;
 import com.aer.security.auth.JwtAuthenticationRequest;
@@ -16,8 +15,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.ldap.userdetails.LdapUserDetails;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,13 +27,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by fan.jin on 2017-05-10.
  */
 
 @RestController
-@RequestMapping( value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE )
+@RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
 
     @Autowired
@@ -48,8 +49,6 @@ public class AuthenticationController {
 
     @Autowired
     private DeviceProvider deviceProvider;
-
-    private LdapUserDetailMapper ldapUserDetailMapper = LdapUserDetailMapper.INSTANCE;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(
@@ -70,10 +69,24 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // token creation
-        //LdapUserDetails userDetail = (LdapUserDetails)authentication.getPrincipal();
+        LdapUserDetailsImpl ldapUserDetail = (LdapUserDetailsImpl) authentication.getPrincipal();
 
-        User user=ldapUserDetailMapper.toDto((LdapUserDetailsImpl) authentication.getPrincipal());
-        String jws = tokenHelper.generateToken( user, device);
+        List<Privilege> privileges = new ArrayList<>();
+        for (GrantedAuthority authority : ldapUserDetail.getAuthorities()) {
+            Privilege privilege = new Privilege();
+            privilege.setName(authority.getAuthority());
+            privileges.add(privilege);
+        }
+        User user = new User();
+        user.setAuthorities(privileges);
+
+        user.setUsername(ldapUserDetail.getUsername());
+        user.setEnabled(ldapUserDetail.isEnabled());
+        user.setFirstName(user.getUsername().split("\\.", -1)[0]);
+        user.setLastName(user.getUsername().split("\\.", -1)[1]);
+        user.setEmail(user.getUsername().concat("@tui.com"));
+        String jws = tokenHelper.generateToken(user, device);
+
         int expiresIn = tokenHelper.getExpiredIn(device);
         // Return the token
         return ResponseEntity.ok(new UserTokenState(jws, expiresIn));
@@ -84,9 +97,9 @@ public class AuthenticationController {
             HttpServletRequest request,
             HttpServletResponse response,
             Principal principal
-            ) {
+    ) {
 
-        String authToken = tokenHelper.getToken( request );
+        String authToken = tokenHelper.getToken(request);
 
         Device device = deviceProvider.getCurrentDevice(request);
 

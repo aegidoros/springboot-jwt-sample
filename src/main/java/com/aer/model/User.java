@@ -4,23 +4,22 @@ import com.aer.entities.Privilege;
 import com.aer.entities.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.ldap.userdetails.LdapUserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class User implements LdapUserDetails {
+public class User implements UserDetails {
 
     private Long id;
 
-    private String dn;
-
     private String username;
 
-    @JsonIgnore
     private String password;
 
     private String firstName;
@@ -39,8 +38,8 @@ public class User implements LdapUserDetails {
 
     private static final long serialVersionUID = 2668653261891276609L;
 
-    @JsonInclude()
-    private List<? extends GrantedAuthority> authorities;
+    private List<Privilege> authorities;
+
 
     public Long getId() {
         return id;
@@ -50,45 +49,8 @@ public class User implements LdapUserDetails {
         this.id = id;
     }
 
-    public void setDn(String dn) {
-        this.dn = dn;
-    }
-
     public String getUsername() {
         return username;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Override
-    public String getDn() {
-        return dn;
-    }
-
-    @Override
-    public void eraseCredentials() {
-
     }
 
     public void setUsername(String username) {
@@ -96,17 +58,29 @@ public class User implements LdapUserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<Privilege> authorities = new ArrayList<>();
-        for (Role role : this.getRoles()) {
-            authorities.addAll(role.getAuthorities());
+    public List<Privilege> getAuthorities() {
+
+        if (authorities != null) {
+            return authorities;
+        } else {
+            authorities = new ArrayList<>();
+            for (Role role : this.getRoles()) {
+                authorities.addAll(role.getAuthorities());
+            }
+            return authorities;
         }
-        return this.authorities = authorities;
     }
 
-    public void setAuthorities(List<? extends GrantedAuthority> authorities) {
-        this.authorities = authorities;
+    public void setAuthorities(List<Privilege> privileges) {
+        authorities = privileges;
     }
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        if (authorities != null) {
+//            return authorities;
+//        }
+//        return authorities = getGrantedAuthorities((List<String>) getPrivileges(roles));
+//    }
+
 
     public String getPassword() {
         return password;
@@ -148,9 +122,6 @@ public class User implements LdapUserDetails {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
 
     public Timestamp getLastPasswordResetDate() {
         return lastPasswordResetDate;
@@ -166,6 +137,56 @@ public class User implements LdapUserDetails {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    private Collection<String> getPrivileges(Collection<Role> roles) {
+
+        final Collection<String> privilegesNames = new ArrayList<>();
+        final Collection<Privilege> privileges = new ArrayList<>();
+        for (final Role role : roles) {
+            //   privilegesNames.add(role.getName());
+            privileges.addAll(role.getAuthorities());
+        }
+        for (final Privilege item : privileges) {
+            privilegesNames.add(item.getName());
+        }
+        return privilegesNames;
+    }
+
+    private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (String privilege : privileges) {
+            authorities.add(new SimpleGrantedAuthority(privilege));
+        }
+        return authorities;
     }
 
 
