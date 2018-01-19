@@ -1,10 +1,8 @@
 package com.aer.model;
 
-import com.aer.entities.Privilege;
-import com.aer.entities.Role;
+import com.aer.entities.PrivilegeEntity;
+import com.aer.entities.RoleEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,8 +18,6 @@ public class User implements UserDetails {
 
     private String username;
 
-    private String password;
-
     private String firstName;
 
     private String lastName;
@@ -32,13 +28,11 @@ public class User implements UserDetails {
 
     private boolean enabled;
 
-    private Timestamp lastPasswordResetDate;
-
-    private List<Role> roles;
+    private List<RoleEntity> roles;
 
     private static final long serialVersionUID = 2668653261891276609L;
 
-    private List<Privilege> authorities;
+    private List<PrivilegeEntity> authorities;
 
 
     public Long getId() {
@@ -58,20 +52,20 @@ public class User implements UserDetails {
     }
 
     @Override
-    public List<Privilege> getAuthorities() {
+    public List<PrivilegeEntity> getAuthorities() {
 
         if (authorities != null) {
             return authorities;
         } else {
             authorities = new ArrayList<>();
-            for (Role role : this.getRoles()) {
+            for (RoleEntity role : this.getRoles()) {
                 authorities.addAll(role.getAuthorities());
             }
             return authorities;
         }
     }
 
-    public void setAuthorities(List<Privilege> privileges) {
+    public void setAuthorities(List<PrivilegeEntity> privileges) {
         authorities = privileges;
     }
 //    public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -82,12 +76,10 @@ public class User implements UserDetails {
 //    }
 
 
+    @JsonIgnore
+    @Override
     public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+        return null;
     }
 
     public String getFirstName() {
@@ -122,20 +114,11 @@ public class User implements UserDetails {
         this.phoneNumber = phoneNumber;
     }
 
-
-    public Timestamp getLastPasswordResetDate() {
-        return lastPasswordResetDate;
-    }
-
-    public void setLastPasswordResetDate(Timestamp lastPasswordResetDate) {
-        this.lastPasswordResetDate = lastPasswordResetDate;
-    }
-
-    public List<Role> getRoles() {
+    public List<RoleEntity> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(List<RoleEntity> roles) {
         this.roles = roles;
     }
 
@@ -167,15 +150,15 @@ public class User implements UserDetails {
         this.enabled = enabled;
     }
 
-    private Collection<String> getPrivileges(Collection<Role> roles) {
+    private Collection<String> getPrivileges(Collection<RoleEntity> roles) {
 
         final Collection<String> privilegesNames = new ArrayList<>();
-        final Collection<Privilege> privileges = new ArrayList<>();
-        for (final Role role : roles) {
+        final Collection<PrivilegeEntity> privileges = new ArrayList<>();
+        for (final RoleEntity role : roles) {
             //   privilegesNames.add(role.getName());
             privileges.addAll(role.getAuthorities());
         }
-        for (final Privilege item : privileges) {
+        for (final PrivilegeEntity item : privileges) {
             privilegesNames.add(item.getName());
         }
         return privilegesNames;

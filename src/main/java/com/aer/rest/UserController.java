@@ -42,7 +42,7 @@ public class UserController {
 
     /*
      *  We are not using userService.findByUsername here(we could),
-     *  so it is good that we are making sure that the user has Role "ROLE_USER"
+     *  so it is good that we are making sure that the user has RoleEntity "ROLE_USER"
      *  to access this endpoint.
      */
     @RequestMapping("/whoami")

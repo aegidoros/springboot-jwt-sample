@@ -1,16 +1,13 @@
 package com.aer.rest;
 
-import com.aer.common.DeviceProvider;
-import com.aer.entities.Privilege;
+import com.aer.entities.PrivilegeEntity;
 import com.aer.entities.UserTokenState;
 import com.aer.model.User;
 import com.aer.security.TokenHelper;
 import com.aer.security.auth.JwtAuthenticationRequest;
-import com.aer.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,17 +41,10 @@ public class AuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
-
-    @Autowired
-    private DeviceProvider deviceProvider;
-
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest,
-            HttpServletResponse response,
-            Device device
+            HttpServletResponse response
     ) throws AuthenticationException, IOException {
 
         // Perform the security
@@ -71,9 +61,9 @@ public class AuthenticationController {
         // token creation
         LdapUserDetailsImpl ldapUserDetail = (LdapUserDetailsImpl) authentication.getPrincipal();
 
-        List<Privilege> privileges = new ArrayList<>();
+        List<PrivilegeEntity> privileges = new ArrayList<>();
         for (GrantedAuthority authority : ldapUserDetail.getAuthorities()) {
-            Privilege privilege = new Privilege();
+            PrivilegeEntity privilege = new PrivilegeEntity();
             privilege.setName(authority.getAuthority());
             privileges.add(privilege);
         }
@@ -85,9 +75,9 @@ public class AuthenticationController {
         user.setFirstName(user.getUsername().split("\\.", -1)[0]);
         user.setLastName(user.getUsername().split("\\.", -1)[1]);
         user.setEmail(user.getUsername().concat("@tui.com"));
-        String jws = tokenHelper.generateToken(user, device);
+        String jws = tokenHelper.generateToken(user);
 
-        int expiresIn = tokenHelper.getExpiredIn(device);
+        int expiresIn = tokenHelper.getExpiredIn();
         // Return the token
         return ResponseEntity.ok(new UserTokenState(jws, expiresIn));
     }
@@ -101,13 +91,11 @@ public class AuthenticationController {
 
         String authToken = tokenHelper.getToken(request);
 
-        Device device = deviceProvider.getCurrentDevice(request);
-
         if (authToken != null && principal != null) {
 
             // TODO check user password last update
-            String refreshedToken = tokenHelper.refreshToken(authToken, device);
-            int expiresIn = tokenHelper.getExpiredIn(device);
+            String refreshedToken = tokenHelper.refreshToken(authToken);
+            int expiresIn = tokenHelper.getExpiredIn();
 
             return ResponseEntity.ok(new UserTokenState(refreshedToken, expiresIn));
         } else {
@@ -116,17 +104,4 @@ public class AuthenticationController {
         }
     }
 
-//    @RequestMapping(value = "/change-password", method = RequestMethod.POST)
-//    @PreAuthorize("hasRole('USER')")
-//    public ResponseEntity<?> changePassword(@RequestBody PasswordChanger passwordChanger) {
-//        userDetailsService.changePassword(passwordChanger.oldPassword, passwordChanger.newPassword);
-//        Map<String, String> result = new HashMap<>();
-//        result.put( "result", "success" );
-//        return ResponseEntity.accepted().body(result);
-//    }
-
-    static class PasswordChanger {
-        public String oldPassword;
-        public String newPassword;
-    }
 }

@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "privilege")
-public class Privilege implements GrantedAuthority {
+public class PrivilegeEntity implements GrantedAuthority {
 
     @Id
     @Column(name = "id")

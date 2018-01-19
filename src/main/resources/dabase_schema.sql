@@ -6,18 +6,16 @@ USE `security`;
 --
 -- Table structure for table `book_detail`
 --
-DROP TABLE IF EXISTS `userEntity`;
+DROP TABLE IF EXISTS `user`;
 
-CREATE TABLE IF NOT EXISTS `userEntity` (
+CREATE TABLE IF NOT EXISTS `user` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
-  `password` varchar(255),
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `phone_number` varchar(255),
   `enabled` boolean NOT NULL,
-  `last_password_reset_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -39,7 +37,7 @@ INDEX `fk_userId_user_role_idx` (`user_id` ASC),
 INDEX `fk_roleId_user_role_idx` (`role_id` ASC),
 CONSTRAINT `fk_userId_user_role`
 	FOREIGN KEY (`user_id`)
-    REFERENCES `userEntity` (`id`)
+    REFERENCES `user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
 CONSTRAINT `fk_roleId_user_role`

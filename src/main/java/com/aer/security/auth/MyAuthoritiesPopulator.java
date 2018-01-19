@@ -17,8 +17,6 @@ public class MyAuthoritiesPopulator implements LdapAuthoritiesPopulator {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
 
     @Override
     public Collection<? extends GrantedAuthority> getGrantedAuthorities(DirContextOperations dirContextOperations, String username) {

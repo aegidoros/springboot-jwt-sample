@@ -1,15 +1,11 @@
 package com.aer.security.auth;
 
-import com.aer.model.User;
 import com.aer.security.TokenHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.ldap.userdetails.LdapUserDetails;
-import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -40,23 +36,22 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             FilterChain chain
     ) throws IOException, ServletException {
 
-        // String username;
+        String username;
         String authToken = tokenHelper.getToken(request);
 
         if (authToken != null) {
             // get username from token
-            UserDetails userDetails = tokenHelper.getUserDetailFromToken(authToken);
-            //  username = tokenHelper.getUsernameFromToken(authToken);
-            //  if (username != null) {
-            // get user
-            //UserDetails userDetails = tokenHelper.getUserDetailFromToken(authToken);//userDetailsService.loadUserByUsername(username);
-            if (tokenHelper.validateToken(authToken, userDetails)) {
-                // create authentication
-                TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
-                authentication.setToken(authToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            username = tokenHelper.getUsernameFromToken(authToken);
+            if (username != null) {
+                // get user
+                UserDetails userDetails = tokenHelper.getUserDetailFromToken(authToken);
+                if (tokenHelper.validateToken(authToken, userDetails)) {
+                    // create authentication
+                    TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
+                    authentication.setToken(authToken);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
-            //  }
         }
         chain.doFilter(request, response);
     }

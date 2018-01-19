@@ -1,20 +1,7 @@
 app:
-  name: springboot-jwt-demo
+  name: springboot-jwt-sample
 
 jwt:
   header: Authorization
   expires_in: 300 # 5 minutes
-  mobile_expires_in: 600 # 10 minutes
   secret: queenvictoria
-
-#spring:
-#  ldap:
-#
-#    # Spring LDAP
-#    #
-#    # In this example we use an embedded ldap server. When using a real one,
-#    # you can configure the settings here.
-#    #
-#    urls: ldaps://esmad1sv0003.tuiad.net:636
-#    username: admin
-#    password: secret

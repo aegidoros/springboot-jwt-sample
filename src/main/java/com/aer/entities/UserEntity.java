@@ -26,10 +26,6 @@ public class UserEntity implements Serializable {
     @Column(name = "username")
     private String username;
 
-    @JsonIgnore
-    @Column(name = "password")
-    private String password;
-
     @Column(name = "first_name")
     private String firstName;
 
@@ -45,14 +41,12 @@ public class UserEntity implements Serializable {
     @Column(name = "enabled")
     private boolean enabled;
 
-    @Column(name = "last_password_reset_date")
-    private Timestamp lastPasswordResetDate;
 
     @ManyToMany
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles;
+    private List<RoleEntity> roles;
 
     public Long getId() {
         return id;
@@ -68,16 +62,6 @@ public class UserEntity implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        Timestamp now = new Timestamp(DateTime.now().getMillis());
-        this.setLastPasswordResetDate(now);
-        this.password = password;
     }
 
     public String getFirstName() {
@@ -96,11 +80,11 @@ public class UserEntity implements Serializable {
         this.lastName = lastName;
     }
 
-    public List<Role> getRoles() {
+    public List<RoleEntity> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(List<RoleEntity> roles) {
         this.roles = roles;
     }
 
@@ -128,12 +112,5 @@ public class UserEntity implements Serializable {
         this.enabled = enabled;
     }
 
-    public Timestamp getLastPasswordResetDate() {
-        return lastPasswordResetDate;
-    }
-
-    public void setLastPasswordResetDate(Timestamp lastPasswordResetDate) {
-        this.lastPasswordResetDate = lastPasswordResetDate;
-    }
 
  }

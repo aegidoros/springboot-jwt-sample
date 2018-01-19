@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "role")
-public class Role implements Serializable {
+public class RoleEntity implements Serializable {
 
     private static final long serialVersionUID = -7800616144725121399L;
 
@@ -29,7 +29,7 @@ public class Role implements Serializable {
                     name = "role_id ", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(
                     name = "privilege_id", referencedColumnName = "id"))
-    private List<Privilege> authorities;
+    private List<PrivilegeEntity> authorities;
 
     public void setName(String name) {
         this.name = name;
@@ -47,11 +47,11 @@ public class Role implements Serializable {
         this.id = id;
     }
 
-    public List<Privilege> getAuthorities() {
+    public List<PrivilegeEntity> getAuthorities() {
         return authorities;
     }
 
-    public void setAuthorities(List<Privilege> authorities) {
+    public void setAuthorities(List<PrivilegeEntity> authorities) {
         this.authorities = authorities;
     }
 
