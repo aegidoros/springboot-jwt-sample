@@ -1,10 +1,9 @@
 package com.aer.config;
 
 import com.aer.security.TokenHelper;
-import com.aer.security.auth.MyAuthoritiesPopulator;
+import com.aer.security.auth.CustomLdapPopulator;
 import com.aer.security.auth.RestAuthenticationEntryPoint;
 import com.aer.security.auth.TokenAuthenticationFilter;
-import com.aer.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -36,21 +35,25 @@ import java.util.List;
 
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${ldap.domain}")
-    private String DOMAIN;
-
     @Value("${ldap.url}")
     private String URL;
+
+    @Value("${ldap.port}")
+    private Integer PORT;
+
 
     @Value("${ldap.rootDN}")
     private String rootDN;
 
+    @Value("${ldap.credential.username}")
+    private String MANAGER_DN;
+
+    @Value("${ldap.credential.password}")
+    private String MANAGER_PWD;
+
 
     @Autowired
-    MyAuthoritiesPopulator myAuthoritiesPopulator;
-
-    @Autowired
-    private CustomUserDetailsService jwtUserDetailsService;
+    CustomLdapPopulator customLdapPopulator;
 
     @Autowired
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
@@ -70,15 +73,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.ldapAuthentication()
                 .contextSource()
-                .root("DC=tuiad,DC=net")
-                .url("ldap://esmad1sv0003.tuiad.net")
-                .port(636)
-                .managerDn("CN=OLP AD User,OU=ServiceAccounts,OU=Destination Services,DC=tuiad,DC=net")
-                .managerPassword("Hola1234")
+                .root(rootDN)
+                .url(URL)
+                .port(PORT)
+                .managerDn(MANAGER_DN)
+                .managerPassword(MANAGER_PWD)
                 .and()
-                .userSearchBase("DC=tuiad,DC=net")
+                .userSearchBase(rootDN)
                 .userSearchFilter("(CN={0})")
-                .ldapAuthoritiesPopulator(myAuthoritiesPopulator);
+                .ldapAuthoritiesPopulator(customLdapPopulator);
     }
 
 

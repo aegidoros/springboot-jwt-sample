@@ -7,10 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class User implements UserDetails {
 
@@ -28,11 +25,11 @@ public class User implements UserDetails {
 
     private boolean enabled;
 
-    private List<RoleEntity> roles;
+    private List<Role> roles;
 
     private static final long serialVersionUID = 2668653261891276609L;
 
-    private List<PrivilegeEntity> authorities;
+    private Collection<SimpleGrantedAuthority> authorities;
 
 
     public Long getId() {
@@ -51,30 +48,23 @@ public class User implements UserDetails {
         this.username = username;
     }
 
-    @Override
-    public List<PrivilegeEntity> getAuthorities() {
-
-        if (authorities != null) {
-            return authorities;
-        } else {
-            authorities = new ArrayList<>();
-            for (RoleEntity role : this.getRoles()) {
-                authorities.addAll(role.getAuthorities());
-            }
-            return authorities;
-        }
-    }
-
-    public void setAuthorities(List<PrivilegeEntity> privileges) {
-        authorities = privileges;
-    }
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//    @Override
+//    public List<Privilege> getAuthorities() {
+//
 //        if (authorities != null) {
 //            return authorities;
+//        } else {
+//            authorities = new ArrayList<>();
+//            for (Role role : this.getRoles()) {
+//                authorities.addAll(role.getAuthorities());
+//            }
+//            return authorities;
 //        }
-//        return authorities = getGrantedAuthorities((List<String>) getPrivileges(roles));
 //    }
 
+    public void setAuthorities(Collection<SimpleGrantedAuthority> privileges) {
+        authorities = privileges;
+    }
 
     @JsonIgnore
     @Override
@@ -114,11 +104,11 @@ public class User implements UserDetails {
         this.phoneNumber = phoneNumber;
     }
 
-    public List<RoleEntity> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<RoleEntity> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 
@@ -150,22 +140,30 @@ public class User implements UserDetails {
         this.enabled = enabled;
     }
 
-    private Collection<String> getPrivileges(Collection<RoleEntity> roles) {
+    @Override
+    public Collection<SimpleGrantedAuthority> getAuthorities() {
+        if (authorities != null) {
+            return authorities;
+        }
+        return getGrantedAuthorities((Set<String>) getPrivileges(roles));
+    }
 
-        final Collection<String> privilegesNames = new ArrayList<>();
-        final Collection<PrivilegeEntity> privileges = new ArrayList<>();
-        for (final RoleEntity role : roles) {
+    private Collection<String> getPrivileges(Collection<Role> roles) {
+
+        final Set<String> privilegesNames = new HashSet<>();
+        final Set<Privilege> privileges = new HashSet<>();
+        for (final Role role : roles) {
             //   privilegesNames.add(role.getName());
             privileges.addAll(role.getAuthorities());
         }
-        for (final PrivilegeEntity item : privileges) {
-            privilegesNames.add(item.getName());
+        for (final Privilege item : privileges) {
+            privilegesNames.add(item.getAuthority());
         }
         return privilegesNames;
     }
 
-    private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
+    private Collection<SimpleGrantedAuthority> getGrantedAuthorities(Set<String> privileges) {
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
         for (String privilege : privileges) {
             authorities.add(new SimpleGrantedAuthority(privilege));
         }

@@ -1,4 +1,4 @@
-package com.aer.entities;
+package com.aer.security;
 
 /**
  * Created by fan.jin on 2016-10-17.

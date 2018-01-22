@@ -2,7 +2,6 @@ package com.aer.security.auth;
 
 import com.aer.model.User;
 import com.aer.service.UserService;
-import com.aer.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 
 @Service
-public class MyAuthoritiesPopulator implements LdapAuthoritiesPopulator {
+public class CustomLdapPopulator implements LdapAuthoritiesPopulator {
 
     @Autowired
     private UserService userService;

@@ -1,34 +1,31 @@
 package com.aer.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.security.core.GrantedAuthority;
-
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "privilege")
-public class PrivilegeEntity implements GrantedAuthority {
+public class PrivilegeEntity implements Serializable {
+
+
+    private static final long serialVersionUID = -5649595619617014688L;
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    @JsonProperty("authority")
     @Column(name = "name")
-    String name;
+    private String authority;
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAuthority(String authority) {
+        this.authority = authority;
     }
 
-    @JsonIgnore
-    public String getName() {
-        return name;
+    public String getAuthority() {
+        return authority;
     }
 
-    @JsonIgnore
     public Long getId() {
         return id;
     }
@@ -37,8 +34,4 @@ public class PrivilegeEntity implements GrantedAuthority {
         this.id = id;
     }
 
-    @Override
-    public String getAuthority() {
-        return name;
-    }
 }

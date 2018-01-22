@@ -2,6 +2,7 @@ package com.aer.security;
 
 import com.aer.common.TimeProvider;
 import com.aer.model.User;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -9,7 +10,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.cas.jackson2.CasJackson2Module;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.jackson2.CoreJackson2Module;
+import org.springframework.security.web.jackson2.WebJackson2Module;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,10 +36,12 @@ public class TokenHelper {
 
     @Value("${jwt.expires_in}")
     private int EXPIRES_IN;
-    
+
     @Value("${jwt.header}")
     private String AUTH_HEADER;
 
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     TimeProvider timeProvider;
@@ -56,13 +62,16 @@ public class TokenHelper {
     public UserDetails getUserDetailFromToken(String token) {
         final Claims claims = this.getAllClaimsFromToken(token);
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+        objectMapper.registerModule(new CoreJackson2Module());
+        objectMapper.registerModule(new CasJackson2Module());
+        objectMapper.registerModule(new WebJackson2Module());
         User user = null;
         try {
             user = objectMapper.readValue((String) claims.get("user"), User.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return user;
     }
 
@@ -97,6 +106,10 @@ public class TokenHelper {
     public String generateToken(User user) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+            objectMapper.registerModule(new CoreJackson2Module());
+            objectMapper.registerModule(new CasJackson2Module());
+            objectMapper.registerModule(new WebJackson2Module());
             String userDetailAsString = objectMapper.writeValueAsString(user);
 
             return Jwts.builder()
@@ -132,15 +145,15 @@ public class TokenHelper {
     }
 
     public int getExpiredIn() {
-        return  EXPIRES_IN;
+        return EXPIRES_IN;
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        User userEntity = (User) userDetails;
+        User user = (User) userDetails;
         final String username = getUsernameFromToken(token);
         return (
                 username != null &&
-                        username.equals(userEntity.getUsername()));
+                        username.equals(user.getUsername()));
     }
 
     public String getToken(HttpServletRequest request) {
