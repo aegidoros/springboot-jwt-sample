@@ -6,6 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -44,7 +45,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             username = tokenHelper.getUsernameFromToken(authToken);
             if (username != null) {
                 // get user
-                UserDetails userDetails = tokenHelper.getUserDetailFromToken(authToken);
+                LdapUserDetails userDetails = tokenHelper.getUserDetailFromToken(authToken);
                 if (tokenHelper.validateToken(authToken, userDetails)) {
                     // create authentication
                     TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);

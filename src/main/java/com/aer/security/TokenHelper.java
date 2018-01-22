@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.cas.jackson2.CasJackson2Module;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.jackson2.CoreJackson2Module;
+import org.springframework.security.ldap.userdetails.LdapUserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.security.web.jackson2.WebJackson2Module;
 import org.springframework.stereotype.Component;
 
@@ -59,16 +61,16 @@ public class TokenHelper {
         return username;
     }
 
-    public UserDetails getUserDetailFromToken(String token) {
+    public LdapUserDetails getUserDetailFromToken(String token) {
         final Claims claims = this.getAllClaimsFromToken(token);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
         objectMapper.registerModule(new CoreJackson2Module());
         objectMapper.registerModule(new CasJackson2Module());
         objectMapper.registerModule(new WebJackson2Module());
-        User user = null;
+        LdapUserDetailsImpl user = null;
         try {
-            user = objectMapper.readValue((String) claims.get("user"), User.class);
+            user = objectMapper.readValue((String) claims.get("user"), LdapUserDetailsImpl.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -103,7 +105,7 @@ public class TokenHelper {
         return refreshedToken;
     }
 
-    public String generateToken(User user) {
+    public String generateToken(LdapUserDetailsImpl user) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
@@ -148,8 +150,8 @@ public class TokenHelper {
         return EXPIRES_IN;
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        User user = (User) userDetails;
+    public Boolean validateToken(String token, LdapUserDetails userDetails) {
+        LdapUserDetailsImpl user = (LdapUserDetailsImpl) userDetails;
         final String username = getUsernameFromToken(token);
         return (
                 username != null &&

@@ -10,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetails;
+import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.Timestamp;
@@ -30,7 +32,7 @@ public class TokenHelperTest {
     private TokenHelper tokenHelper;
 
     @Mock
-    private User userDetails;
+    private LdapUserDetailsImpl userDetails;
 
     @Mock
     private TimeProvider timeProviderMock;
@@ -60,7 +62,7 @@ public class TokenHelperTest {
     public void mobileTokenShouldLiveLonger() {
         Date beforeSomeTime = new Date(DateUtil.now().getTime() - 15 * 1000);
 
-        UserDetails userDetails = mock(User.class);
+        LdapUserDetails userDetails = mock(LdapUserDetailsImpl.class);
         when(userDetails.getUsername()).thenReturn(TEST_USERNAME);
 
         when(timeProviderMock.now())
@@ -76,7 +78,7 @@ public class TokenHelperTest {
         when(timeProviderMock.now())
                 .thenReturn(beforeSomeTime);
 
-        User userDetails = mock(User.class);
+        LdapUserDetails userDetails = mock(LdapUserDetailsImpl.class);
         when(userDetails.getUsername()).thenReturn(TEST_USERNAME);
 
         final String mobileToken = createToken();
@@ -117,7 +119,7 @@ public class TokenHelperTest {
         when(timeProviderMock.now())
                 .thenReturn(DateUtil.now());
 
-        User User = mock(User.class);
+        LdapUserDetailsImpl User = mock(LdapUserDetailsImpl.class);
         String token = createToken();
         assertThat(tokenHelper.validateToken(token, User)).isFalse();
     }
