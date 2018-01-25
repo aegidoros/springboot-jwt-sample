@@ -2,7 +2,7 @@
 //
 //import com.aer.common.TimeProvider;
 //import com.aer.entities.RoleEntity;
-//import com.aer.model.Privilege;
+//import com.aer.model.Permission;
 //import com.aer.model.User;
 //import com.aer.security.TokenHelper;
 //import org.assertj.core.util.DateUtil;
@@ -69,8 +69,8 @@
 //        RoleEntity role = new RoleEntity();
 //        role.setId(0L);
 //        role.setName("ROLE_USER");
-//        List<Privilege> authorities =new ArrayList<>();
-//        authorities.add(new Privilege());
+//        List<Permission> authorities =new ArrayList<>();
+//        authorities.add(new Permission());
 //        user.setAuthorities(authorities);
 //        //when(this.userDetailsService.loadUserByUsername(eq("testUser"))).thenReturn(user);
 //        MockitoAnnotations.initMocks(this);

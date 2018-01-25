@@ -1,15 +1,16 @@
 package com.aer.model;
 
-import com.aer.entities.PrivilegeEntity;
-import com.aer.entities.RoleEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class User implements UserDetails {
+    private static final long serialVersionUID = 2668653261891276609L;
 
     private Long id;
 
@@ -21,16 +22,9 @@ public class User implements UserDetails {
 
     private String email;
 
-    private String phoneNumber;
-
     private boolean enabled;
 
-    private List<Role> roles;
-
-    private static final long serialVersionUID = 2668653261891276609L;
-
-    private Collection<SimpleGrantedAuthority> authorities;
-
+    private Role role;
 
     public Long getId() {
         return id;
@@ -46,24 +40,6 @@ public class User implements UserDetails {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-//    @Override
-//    public List<Privilege> getAuthorities() {
-//
-//        if (authorities != null) {
-//            return authorities;
-//        } else {
-//            authorities = new ArrayList<>();
-//            for (Role role : this.getRoles()) {
-//                authorities.addAll(role.getAuthorities());
-//            }
-//            return authorities;
-//        }
-//    }
-
-    public void setAuthorities(Collection<SimpleGrantedAuthority> privileges) {
-        authorities = privileges;
     }
 
     @JsonIgnore
@@ -96,23 +72,6 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-
-
     @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
@@ -140,32 +99,32 @@ public class User implements UserDetails {
         this.enabled = enabled;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     @Override
     public Collection<SimpleGrantedAuthority> getAuthorities() {
-        if (authorities != null) {
-            return authorities;
-        }
-        return getGrantedAuthorities((Set<String>) getPrivileges(roles));
+        return getGrantedAuthorities((Set<String>) getPermissions(role));
     }
 
-    private Collection<String> getPrivileges(Collection<Role> roles) {
+    private Collection<String> getPermissions(Role role) {
 
-        final Set<String> privilegesNames = new HashSet<>();
-        final Set<Privilege> privileges = new HashSet<>();
-        for (final Role role : roles) {
-            //   privilegesNames.add(role.getName());
-            privileges.addAll(role.getAuthorities());
+        final Set<String> permissionsNames = new HashSet<>();
+        for (final Permission item : role.getPermissions()) {
+            permissionsNames.add(item.getAuthority());
         }
-        for (final Privilege item : privileges) {
-            privilegesNames.add(item.getAuthority());
-        }
-        return privilegesNames;
+        return permissionsNames;
     }
 
-    private Collection<SimpleGrantedAuthority> getGrantedAuthorities(Set<String> privileges) {
+    private Collection<SimpleGrantedAuthority> getGrantedAuthorities(Set<String> permissions) {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        for (String privilege : privileges) {
-            authorities.add(new SimpleGrantedAuthority(privilege));
+        for (String permission : permissions) {
+            authorities.add(new SimpleGrantedAuthority(permission));
         }
         return authorities;
     }

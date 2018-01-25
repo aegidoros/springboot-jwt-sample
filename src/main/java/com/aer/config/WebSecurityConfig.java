@@ -32,7 +32,6 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, proxyTargetClass = true)
-
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${ldap.url}")
@@ -40,7 +39,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${ldap.port}")
     private Integer PORT;
-
 
     @Value("${ldap.rootDN}")
     private String rootDN;
