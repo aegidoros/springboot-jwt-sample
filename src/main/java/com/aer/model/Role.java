@@ -1,7 +1,5 @@
 package com.aer.model;
 
-import com.aer.entities.PrivilegeEntity;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -13,7 +11,7 @@ public class Role  implements Serializable {
 
     private String name;
 
-    private List<Privilege> authorities;
+    private List<Permission> authorities;
 
     public void setName(String name) {
         this.name = name;
@@ -31,10 +29,10 @@ public class Role  implements Serializable {
         this.id = id;
     }
 
-    public List<Privilege> getAuthorities() {
+    public List<Permission> getAuthorities() {
         return authorities;
     }
-    public void setAuthorities(List<Privilege> authorities) {
+    public void setAuthorities(List<Permission> authorities) {
         this.authorities = authorities;
     }
 

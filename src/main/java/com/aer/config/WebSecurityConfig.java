@@ -115,10 +115,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         // TokenAuthenticationFilter will ignore the below paths
+        web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**");
+
+
         web.ignoring().antMatchers(
                 HttpMethod.POST,
                 "/auth/login"
         );
+
         web.ignoring().antMatchers(
                 HttpMethod.GET,
                 "/",
@@ -131,5 +135,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         );
 
     }
+
 
 }

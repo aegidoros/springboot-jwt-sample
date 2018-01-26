@@ -8,18 +8,15 @@
  INSERT INTO role ( name) VALUES ('ROLE_USER');
  INSERT INTO role ( name) VALUES ('ROLE_ADMIN');
 
- INSERT INTO privilege ( name) VALUES ('user_view');
- INSERT INTO privilege ( name) VALUES ('user_create');
- INSERT INTO privilege ( name) VALUES ('user_delete');
- INSERT INTO privilege ( name) VALUES ('user_update');
+ INSERT INTO permission ( name) VALUES ('user_view');
+ INSERT INTO permission ( name) VALUES ('user_edit');
 
  INSERT INTO user_role (user_id, role_id) VALUES (1, 2);
  INSERT INTO user_role (user_id, role_id) VALUES (2, 1);
  INSERT INTO user_role (user_id, role_id) VALUES (3, 2);
 
 
- INSERT INTO role_privilege ( `role_id`, `privilege_id`) VALUES (1,1);
- INSERT INTO role_privilege ( `role_id`, `privilege_id`) VALUES (2,1);
- INSERT INTO role_privilege ( `role_id`, `privilege_id`) VALUES (2,2);
- INSERT INTO role_privilege ( `role_id`, `privilege_id`) VALUES (2,3);
- INSERT INTO role_privilege ( `role_id`, `privilege_id`) VALUES (2,4);
+ INSERT INTO role_permission ( `role_id`, `permission_id`) VALUES (1,1);
+ INSERT INTO role_permission ( `role_id`, `permission_id`) VALUES (2,1);
+ INSERT INTO role_permission ( `role_id`, `permission_id`) VALUES (2,2);
+

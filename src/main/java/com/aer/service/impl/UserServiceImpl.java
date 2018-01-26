@@ -39,4 +39,10 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public User save(User user) {
+        UserEntity userEntity= userRepository.save(userMapper.toEntity(user));
+        return userMapper.toDto(userEntity);
+    }
+
 }

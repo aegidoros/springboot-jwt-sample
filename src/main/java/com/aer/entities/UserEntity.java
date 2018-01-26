@@ -35,9 +35,6 @@ public class UserEntity implements Serializable {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
-
     @Column(name = "enabled")
     private boolean enabled;
 
@@ -94,14 +91,6 @@ public class UserEntity implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public boolean isEnabled() {

@@ -1,9 +1,6 @@
 package com.aer.model;
 
-import com.aer.entities.PrivilegeEntity;
-import com.aer.entities.RoleEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -20,8 +17,6 @@ public class User implements UserDetails {
     private String lastName;
 
     private String email;
-
-    private String phoneNumber;
 
     private boolean enabled;
 
@@ -49,7 +44,7 @@ public class User implements UserDetails {
     }
 
 //    @Override
-//    public List<Privilege> getAuthorities() {
+//    public List<Permission> getAuthorities() {
 //
 //        if (authorities != null) {
 //            return authorities;
@@ -94,14 +89,6 @@ public class User implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public List<Role> getRoles() {
@@ -151,12 +138,12 @@ public class User implements UserDetails {
     private Collection<String> getPrivileges(Collection<Role> roles) {
 
         final Set<String> privilegesNames = new HashSet<>();
-        final Set<Privilege> privileges = new HashSet<>();
+        final Set<Permission> permissions = new HashSet<>();
         for (final Role role : roles) {
             //   privilegesNames.add(role.getName());
-            privileges.addAll(role.getAuthorities());
+            permissions.addAll(role.getAuthorities());
         }
-        for (final Privilege item : privileges) {
+        for (final Permission item : permissions) {
             privilegesNames.add(item.getAuthority());
         }
         return privilegesNames;
