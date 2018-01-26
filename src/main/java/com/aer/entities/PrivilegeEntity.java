@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "permission")
-public class PermissionEntity implements Serializable {
+@Table(name = "privilege")
+public class PrivilegeEntity implements Serializable {
 
 
     private static final long serialVersionUID = -5649595619617014688L;

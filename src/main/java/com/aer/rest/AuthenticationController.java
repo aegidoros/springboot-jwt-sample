@@ -37,6 +37,7 @@ public class AuthenticationController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {
+
         // Perform the security
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -44,11 +45,14 @@ public class AuthenticationController {
                         authenticationRequest.getPassword()
                 )
         );
+
         // Inject into security context
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         // token creation
         LdapUserDetailsImpl ldapUserDetail = (LdapUserDetailsImpl) authentication.getPrincipal();
         String jws = tokenHelper.generateToken(ldapUserDetail);
+
         int expiresIn = tokenHelper.getExpiredIn();
         // Return the token
         return ResponseEntity.ok(new UserTokenState(jws, expiresIn));

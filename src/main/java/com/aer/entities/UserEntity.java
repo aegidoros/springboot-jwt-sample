@@ -1,7 +1,11 @@
 package com.aer.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.joda.time.DateTime;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.List;
 
 
@@ -31,13 +35,18 @@ public class UserEntity implements Serializable {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Column(name = "enabled")
     private boolean enabled;
 
-    @ManyToOne( fetch=FetchType.LAZY)
-    @JoinColumn(name = "role_id")
-    private RoleEntity role;
 
+    @ManyToMany
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private List<RoleEntity> roles;
 
     public Long getId() {
         return id;
@@ -71,12 +80,28 @@ public class UserEntity implements Serializable {
         this.lastName = lastName;
     }
 
+    public List<RoleEntity> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RoleEntity> roles) {
+        this.roles = roles;
+    }
+
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public boolean isEnabled() {
@@ -87,12 +112,5 @@ public class UserEntity implements Serializable {
         this.enabled = enabled;
     }
 
-    public RoleEntity getRole() {
-        return role;
-    }
 
-    public void setRole(RoleEntity role) {
-        this.role = role;
-    }
-
-}
+ }

@@ -6,16 +6,6 @@ USE `security`;
 --
 -- Table structure for table `book_detail`
 --
-
-DROP TABLE IF EXISTS `role`;
-
-CREATE TABLE IF NOT EXISTS `role` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
 DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE IF NOT EXISTS `user` (
@@ -24,42 +14,65 @@ CREATE TABLE IF NOT EXISTS `user` (
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
+  `phone_number` varchar(255),
   `enabled` boolean NOT NULL,
-  `role_id` bigint NOT NULL ,
-  PRIMARY KEY (`id`),
-  INDEX `fk_roleId_user_idx`(`role_id` ASC),
-  CONSTRAINT `fk_roleId_user`
-  FOREIGN KEY (`role_id`)
-    REFERENCES  `role`(`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `role`;
 
-DROP TABLE IF EXISTS `permission`;
+CREATE TABLE IF NOT EXISTS `role` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `permission` (
+DROP TABLE IF EXISTS `user_role`;
+
+CREATE TABLE IF NOT EXISTS `user_role`(
+`user_id` bigint NOT NULL,
+`role_id` bigint NOT NULL,
+PRIMARY KEY (`user_id`, `role_id`),
+INDEX `fk_userId_user_role_idx` (`user_id` ASC),
+INDEX `fk_roleId_user_role_idx` (`role_id` ASC),
+CONSTRAINT `fk_userId_user_role`
+	FOREIGN KEY (`user_id`)
+    REFERENCES `user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+CONSTRAINT `fk_roleId_user_role`
+	FOREIGN KEY (`role_id`)
+    REFERENCES `role` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+)
+ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `privilege`;
+
+CREATE TABLE IF NOT EXISTS `privilege` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `role_permission`;
+DROP TABLE IF EXISTS `role_privilege`;
 
-CREATE TABLE IF NOT EXISTS `role_permission`(
+CREATE TABLE IF NOT EXISTS `role_privilege`(
   `role_id` bigint NOT NULL,
-  `permission_id` bigint NOT NULL,
-  PRIMARY KEY (`role_id`, `permission_id`),
-  INDEX `fk_roleId_role_permission_idx` (`role_id` ASC),
-  INDEX `fk_permissionId_role_permission_idx` (`permission_id` ASC),
-  CONSTRAINT `fk_roleId_role_permission`
+  `privilege_id` bigint NOT NULL,
+  PRIMARY KEY (`role_id`, `privilege_id`),
+  INDEX `fk_roleId_role_privilege_idx` (`role_id` ASC),
+  INDEX `fk_privilegeId_role_privilege_idx` (`privilege_id` ASC),
+  CONSTRAINT `fk_roleId_role_privilege`
   FOREIGN KEY (`role_id`)
   REFERENCES `role` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_permissionId_role_permission`
-  FOREIGN KEY (`permission_id`)
-  REFERENCES `permission` (`id`)
+  CONSTRAINT `fk_privilegeId_role_privilege`
+  FOREIGN KEY (`privilege_id`)
+  REFERENCES `privilege` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 )

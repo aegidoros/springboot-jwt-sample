@@ -2,7 +2,7 @@ package com.aer.model;
 
 import org.springframework.security.core.GrantedAuthority;
 
-public class Permission implements GrantedAuthority {
+public class Privilege implements GrantedAuthority {
 
 
     private static final long serialVersionUID = 6039981147482244093L;

@@ -10,9 +10,5 @@ import org.mapstruct.factory.Mappers;
 public interface UserMapper extends EntityMapper<User, UserEntity> {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
-    RoleMapper roleMapper = RoleMapper.INSTANCE;
-    @Override
-   // @Mapping(target = "role", expression = "java(roleMapper.toDTO(userEntity.getRole))")
-    User toDto(UserEntity userEntity);
 
 }

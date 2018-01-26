@@ -24,12 +24,12 @@ public class RoleEntity implements Serializable {
 
     @ManyToMany
     @JoinTable(
-            name = "role_permission",
+            name = "role_privilege",
             joinColumns = @JoinColumn(
                     name = "role_id ", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(
-                    name = "permission_id", referencedColumnName = "id"))
-    private List<PermissionEntity> permissions;
+                    name = "privilege_id", referencedColumnName = "id"))
+    private List<PrivilegeEntity> authorities;
 
     public void setName(String name) {
         this.name = name;
@@ -47,12 +47,12 @@ public class RoleEntity implements Serializable {
         this.id = id;
     }
 
-    public List<PermissionEntity> getPermissions() {
-        return permissions;
+    public List<PrivilegeEntity> getAuthorities() {
+        return authorities;
     }
 
-    public void setPermissions(List<PermissionEntity> permissions) {
-        this.permissions = permissions;
+    public void setAuthorities(List<PrivilegeEntity> authorities) {
+        this.authorities = authorities;
     }
 
 
