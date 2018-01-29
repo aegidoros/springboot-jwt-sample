@@ -19,6 +19,15 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `api_client`;
+
+CREATE TABLE IF NOT EXISTS `api_client`(
+  `id` BIGINT NOT NULL  AUTO_INCREMENT,
+  `api_key` varchar(36) unique not null,
+  `secret_id` varchar(36) unique not null,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `role`;
 
 CREATE TABLE IF NOT EXISTS `role` (
@@ -47,6 +56,28 @@ CONSTRAINT `fk_roleId_user_role`
     ON UPDATE NO ACTION
 )
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `api_role`;
+
+CREATE TABLE IF NOT EXISTS `api_role`(
+  `api_client_id` bigint NOT NULL,
+  `role_id` bigint NOT NULL,
+  PRIMARY KEY (`api_client_id`, `role_id`),
+  INDEX `fk_apiClientId_api_role_idx` (`api_client_id` ASC),
+  INDEX `fk_roleId_api_role_idx` (`role_id` ASC),
+  CONSTRAINT `fk_apiClientId_api_role`
+  FOREIGN KEY (`api_client_id`)
+  REFERENCES `api_client` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_roleId_api_role`
+  FOREIGN KEY (`role_id`)
+  REFERENCES `role` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+)
+  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `permission`;

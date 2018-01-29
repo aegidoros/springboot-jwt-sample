@@ -39,7 +39,7 @@ public class UserController {
     })
     @GetMapping(value = "/user/{id}")
     @PreAuthorize("hasAuthority('user_view')")
-    public User loadById(@PathVariable("id") Long id) {
+    public User loadById(@RequestHeader(value = "Api-Token") String apiToken,  @PathVariable("id") Long id) {
         return this.userService.findById(id);
     }
 
@@ -54,7 +54,7 @@ public class UserController {
     })
     @GetMapping(value = "/user/all")
     @PreAuthorize("hasAuthority('user_view')")
-    public List<User> loadAll() {
+    public List<User> loadAll(@RequestHeader(value = "Api-Token", required = false) String apiToken) {
         return this.userService.findAll();
     }
 
@@ -86,7 +86,7 @@ public class UserController {
     })
     @PostMapping("/user")
     @PreAuthorize("hasAuthority('user_edit')")
-    public ResponseEntity<User> create(@RequestBody User user) {
+    public ResponseEntity<User> create(@RequestHeader(value = "Api-Token") String apiToken, @RequestBody User user) {
         User userCreated = userService.save(user);
         return new ResponseEntity<>(userCreated, HttpStatus.CREATED);
     }

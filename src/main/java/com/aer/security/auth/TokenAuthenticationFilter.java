@@ -39,22 +39,27 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         String username;
         String authToken = tokenHelper.getToken(request);
-
-        if (authToken != null) {
-            // get username from token
-            username = tokenHelper.getUsernameFromToken(authToken);
-            if (username != null) {
-                // get user
-                LdapUserDetails userDetails = tokenHelper.getUserDetailFromToken(authToken);
+        username = tokenHelper.getUsernameFromToken(authToken);
+        if (authToken != null && username != null) {
+            if (tokenHelper.isApiToken(username)) {
+                UserDetails userDetails = tokenHelper.getUserDetailFromToken(authToken);
                 if (tokenHelper.validateToken(authToken, userDetails)) {
-                    // create authentication
-                    TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
-                    authentication.setToken(authToken);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    createAuthentication(authToken, userDetails);
+                }
+            } else {
+                LdapUserDetails ldapUserDetails = tokenHelper.getLdapUserDetailFromToken(authToken);
+                if (tokenHelper.validateToken(authToken, ldapUserDetails)) {
+                    createAuthentication(authToken, ldapUserDetails);
                 }
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private void createAuthentication(String authToken, UserDetails userDetails) {
+        TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
+        authentication.setToken(authToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
 }
